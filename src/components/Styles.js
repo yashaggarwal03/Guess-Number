@@ -11,4 +11,10 @@ export default StyleSheet.create({
     fontFamily: 'OpenSans-Regular',
     color: '#000',
   },
+  largeText: {
+    fontFamily: 'OpenSans-Regular',
+    fontSize: 18,
+    color: '#000',
+    textAlign: 'center',
+  },
 });
