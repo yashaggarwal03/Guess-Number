@@ -1,8 +1,17 @@
 import React, {useState, useRef, useEffect} from 'react';
-import {Button, Text, View, StyleSheet, Alert} from 'react-native';
+import {
+  Text,
+  View,
+  StyleSheet,
+  Alert,
+  ScrollView,
+} from 'react-native';
 
 import Card from '../components/Card';
+import MainButton from '../components/MainButton';
 import NumberContainer from '../components/NumberContainer';
+import Styles from '../constants/Styles';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 
 const generateRandomNumber = (min, max, exclude) => {
   min = Math.ceil(min);
@@ -19,13 +28,13 @@ const GameScreen = props => {
   const [currentGuess, setCurrentGuess] = useState(
     generateRandomNumber(1, 100, props.userChoice),
   );
-  const [rounds, setRounds] = useState(0);
+  const [previousGuess, setPreviousGuess] = useState([]);
   const currentLow = useRef(1);
   const currentHigh = useRef(100);
 
   useEffect(() => {
     if (currentGuess === props.userChoice) {
-      props.onGameOver(rounds);
+      props.onGameOver(previousGuess.length);
     }
   });
 
@@ -42,7 +51,7 @@ const GameScreen = props => {
     if (hint === 'lower') {
       currentHigh.current = currentGuess;
     } else {
-      currentLow.current = currentGuess;
+      currentLow.current = currentGuess + 1;
     }
     const newGuess = generateRandomNumber(
       currentLow.current,
@@ -50,17 +59,38 @@ const GameScreen = props => {
       currentGuess,
     );
     setCurrentGuess(newGuess);
-    setRounds(rounds => rounds + 1);
+    setPreviousGuess([currentGuess, ...previousGuess]);
   };
+
+  const renderListItem = (value, round) => (
+    <View style={styles.listItem} key={value}>
+      <Text style={Styles.largeText}>#{round}</Text>
+      <Text style={Styles.largeText}>{value}</Text>
+    </View>
+  );
 
   return (
     <View style={styles.container}>
-      <Text>COMPUTER'S GUESS</Text>
+      <Text style={Styles.title}>COMPUTER'S GUESS</Text>
       <NumberContainer>{currentGuess}</NumberContainer>
       <Card style={styles.buttonContainer}>
-        <Button title="LOWER" onPress={nextGuess.bind(this, 'lower')} />
-        <Button title="HIGHER" onPress={nextGuess.bind(this, 'higher')} />
+        <MainButton onPress={nextGuess.bind(this, 'lower')}>
+          <AntDesign name="minus" size={25} color="#fff" />
+        </MainButton>
+        <MainButton onPress={nextGuess.bind(this, 'higher')}>
+          <AntDesign name="plus" size={25} color="#fff" />
+        </MainButton>
       </Card>
+
+      {/* We can also use FlatList here instead of ScrollView but as the list will not be too long so ScrollView will not cause any performace issue */}
+
+      <View style={styles.listContainer}>
+        <ScrollView showsVerticalScrollIndicator={false}>
+          {previousGuess.map((guess, index) =>
+            renderListItem(guess, previousGuess.length - index),
+          )}
+        </ScrollView>
+      </View>
     </View>
   );
 };
@@ -69,14 +99,27 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    padding: 15,
+    padding: 5,
   },
   buttonContainer: {
     flexDirection: 'row',
-    width: 300,
-    maxWidth: '80%',
+    width: '80%',
     justifyContent: 'space-around',
     marginTop: 20,
+  },
+  listContainer: {
+    flex: 1,
+    width: '55%',
+  },
+  listItem: {
+    borderColor: '#222',
+    borderWidth: 1,
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    marginVertical: 15,
+    backgroundColor: '#fff',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
 });
 
