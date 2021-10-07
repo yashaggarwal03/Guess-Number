@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {StyleSheet, Text, View, StatusBar} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 
 import Header from './src/components/Header';
 import GameOver from './src/screens/GameOver';
@@ -41,7 +41,6 @@ const App = () => {
 
   return (
     <View style={styles.container}>
-      {/* <StatusBar translucent={true} backgroundColor="transparent"/> */}
       <Header title="Guess a Number" />
       {screen}
     </View>
