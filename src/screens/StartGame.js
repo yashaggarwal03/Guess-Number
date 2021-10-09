@@ -7,6 +7,8 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   Alert,
+  ScrollView,
+  Dimensions
 } from 'react-native';
 
 import Card from '../components/Card';
@@ -57,7 +59,10 @@ const StartGame = props => {
     );
   }
 
+  const {height, width} = Dimensions.get("window");
+
   return (
+    <ScrollView>
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
         <Text style={Styles.title}>Start a New Game!</Text>
@@ -91,6 +96,7 @@ const StartGame = props => {
         {confirmedOutput}
       </View>
     </TouchableWithoutFeedback>
+    </ScrollView>
   );
 };
 
@@ -117,7 +123,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
   },
   button: {
-    width: 100,
+    // width: 100,
+    width: width/2 
   },
   confirmNumberContainer: {
     marginVertical: 20,
