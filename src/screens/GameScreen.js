@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Alert,
   ScrollView,
+  Dimensions,
 } from 'react-native';
 
 import Card from '../components/Card';
@@ -29,8 +30,22 @@ const GameScreen = props => {
     generateRandomNumber(1, 100, props.userChoice),
   );
   const [previousGuess, setPreviousGuess] = useState([]);
+  const [availableDeviceHeight, setAvailableDeviceHeight] = useState(
+    Dimensions.get('window').height,
+  );
   const currentLow = useRef(1);
   const currentHigh = useRef(100);
+
+  useEffect(() => {
+    const updateLayout = () => {
+      setAvailableDeviceHeight(Dimensions.get('window').height);
+    };
+
+    Dimensions.addEventListener('change', updateLayout);
+    return () => {
+      Dimensions.addEventListener('change', updateLayout).remove();
+    };
+  });
 
   useEffect(() => {
     if (currentGuess === props.userChoice) {
@@ -64,16 +79,52 @@ const GameScreen = props => {
 
   const renderListItem = (value, round) => (
     <View style={styles.listItem} key={value}>
-      <Text style={Styles.largeText}>#{round}</Text>
-      <Text style={Styles.largeText}>{value}</Text>
+      <Text allowFontScaling={false} style={Styles.largeText}>
+        #{round}
+      </Text>
+      <Text allowFontScaling={false} style={Styles.largeText}>
+        {value}
+      </Text>
     </View>
   );
 
+  if (availableDeviceHeight < 500) {
+    return (
+      <View style={styles.container}>
+        <Text allowFontScaling={false} style={Styles.title}>
+          COMPUTER'S GUESS
+        </Text>
+        <View style={styles.smallButtonContainer}>
+          <MainButton onPress={nextGuess.bind(this, 'lower')}>
+            <AntDesign name="minus" size={25} color="#fff" />
+          </MainButton>
+          <NumberContainer>{currentGuess}</NumberContainer>
+          <MainButton onPress={nextGuess.bind(this, 'higher')}>
+            <AntDesign name="plus" size={25} color="#fff" />
+          </MainButton>
+        </View>
+        <View style={styles.listContainer}>
+          <ScrollView showsVerticalScrollIndicator={false}>
+            {previousGuess.map((guess, index) =>
+              renderListItem(guess, previousGuess.length - index),
+            )}
+          </ScrollView>
+        </View>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
-      <Text style={Styles.title}>COMPUTER'S GUESS</Text>
+      <Text allowFontScaling={false} style={Styles.title}>
+        COMPUTER'S GUESS
+      </Text>
       <NumberContainer>{currentGuess}</NumberContainer>
-      <Card style={styles.buttonContainer}>
+      <Card
+        style={{
+          ...styles.buttonContainer,
+          marginTop: availableDeviceHeight > 600 ? 20 : 10,
+        }}>
         <MainButton onPress={nextGuess.bind(this, 'lower')}>
           <AntDesign name="minus" size={25} color="#fff" />
         </MainButton>
@@ -105,7 +156,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     width: '80%',
     justifyContent: 'space-around',
-    marginTop: 20,
+  },
+  smallButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '80%',
+    alignItems: 'center',
   },
   listContainer: {
     flex: 1,
