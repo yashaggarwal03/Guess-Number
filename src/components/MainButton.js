@@ -9,7 +9,9 @@ const MainButton = props => {
       activeOpacity={0.5}
       style={styles.button}
       onPress={props.onPress}>
-      <Text style={styles.buttonText}>{props.children}</Text>
+      <Text allowFontScaling={false} style={styles.buttonText}>
+        {props.children}
+      </Text>
     </TouchableOpacity>
   );
 };
