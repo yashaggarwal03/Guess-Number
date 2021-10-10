@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   Button,
   StyleSheet,
@@ -8,7 +8,7 @@ import {
   Keyboard,
   Alert,
   ScrollView,
-  Dimensions
+  Dimensions,
 } from 'react-native';
 
 import Card from '../components/Card';
@@ -22,6 +22,20 @@ const StartGame = props => {
   const [number, setNumber] = useState('');
   const [confirm, setConfirm] = useState(false);
   const [selectedNumber, setSelectedNumber] = useState();
+  const [buttonWidth, setButtonWidth] = useState(
+    Dimensions.get('window').width / 4,
+  );
+
+  useEffect(() => {
+    const updateLayout = () => {
+      setButtonWidth(Dimensions.get('window').width / 4);
+    };
+
+    Dimensions.addEventListener('change', updateLayout);
+    return () => {
+      Dimensions.addEventListener('change', updateLayout).remove();
+    };
+  });
 
   const enteredInput = number => {
     setNumber(number.replace(/[^0-9]/g, ''));
@@ -59,43 +73,43 @@ const StartGame = props => {
     );
   }
 
-  const {height, width} = Dimensions.get("window");
-
   return (
     <ScrollView>
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View style={styles.container}>
-        <Text style={Styles.title}>Start a New Game!</Text>
-        <Card style={styles.inputContainer}>
-          <Text style={Styles.text}>Select a Number</Text>
-          <Input
-            style={styles.input}
-            keyboardType="number-pad"
-            maxLength={2}
-            allowFontScaling={false}
-            onChangeText={enteredInput}
-            value={number}
-          />
-          <View style={styles.buttonContainer}>
-            <View style={styles.button}>
-              <Button
-                title="Reset"
-                onPress={resetInput}
-                color={Colors.secondary}
-              />
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View style={styles.container}>
+          <Text allowFontScaling={false} style={Styles.title}>
+            Start a New Game!
+          </Text>
+          <Card style={styles.inputContainer}>
+            <Text style={Styles.text}>Select a Number</Text>
+            <Input
+              style={styles.input}
+              keyboardType="number-pad"
+              maxLength={2}
+              allowFontScaling={false}
+              onChangeText={enteredInput}
+              value={number}
+            />
+            <View style={styles.buttonContainer}>
+              <View style={{width: buttonWidth}}>
+                <Button
+                  title="Reset"
+                  onPress={resetInput}
+                  color={Colors.secondary}
+                />
+              </View>
+              <View style={{width: buttonWidth}}>
+                <Button
+                  title="Confirm"
+                  onPress={confirmInput}
+                  color={Colors.primary}
+                />
+              </View>
             </View>
-            <View style={styles.button}>
-              <Button
-                title="Confirm"
-                onPress={confirmInput}
-                color={Colors.primary}
-              />
-            </View>
-          </View>
-        </Card>
-        {confirmedOutput}
-      </View>
-    </TouchableWithoutFeedback>
+          </Card>
+          {confirmedOutput}
+        </View>
+      </TouchableWithoutFeedback>
     </ScrollView>
   );
 };
@@ -107,8 +121,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   inputContainer: {
-    width: 300,
-    maxWidth: '80%',
+    width: '80%',
     alignItems: 'center',
   },
   input: {
@@ -122,10 +135,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 15,
   },
-  button: {
-    // width: 100,
-    width: width/2 
-  },
+  // button: {
+  //   // width: 100,
+  //   width: width / 4.1,
+  // },
   confirmNumberContainer: {
     marginVertical: 20,
     alignItems: 'center',
